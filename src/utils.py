@@ -4,6 +4,36 @@ from mysql.connector import Error, DatabaseError
 from settings_local import ROOT_PASSWORD, DB_NAME
 
 
+def check_database_existence(DB_NAME: str) -> bool:
+    """
+    Checks if database exists in MySQL.
+    Returns True if the database exists.
+    DB_NAME is the value of the constant stored in setting_local.py
+    """
+    try:
+        sql = mysql.connector.connect(host="localhost",
+                                      user="root",
+                                      password=ROOT_PASSWORD,
+                                      database="mysql")
+
+        cursor = sql.cursor()
+        cursor.execute("SHOW DATABASES;")
+        result = cursor.fetchall()
+        for database in result:
+            if database[0] == DB_NAME:
+                return True
+
+        return False
+
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+
+    finally:
+        if sql.is_connected():
+            cursor.close()
+            sql.close()
+
+
 def get_json_data_from_api() -> dict:
     print("Gathering data from OpenFoodFacts API...")
     url = "https://fr.openfoodfacts.org/cgi/search.pl?json=true&action=process&sort_by=popularity&page_size=500&page=1&sort_by=unique_scans_n&fields=product_name,nutriscore_grade,url,stores,purchase_places,pnns_groups_1,pnns_groups_2&coutries=france" # noqa

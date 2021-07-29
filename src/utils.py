@@ -81,3 +81,90 @@ def create_tables() -> None:
             cursor.close()
             sql.close()
             print("MySQL connection is closed")
+
+
+def request_to_data(json_data: dict) -> list:
+    """
+    Creates a nested list containing products and all their informations.
+    Will ignore incomplete products.
+
+    json_data: json data from the OpenFoodFacts API
+    """
+
+    data = []
+    for product in json_data["products"]:
+        try:
+            product_name = product["product_name"]
+            nutriscore_grade = product["nutriscore_grade"]
+            url = product["url"]
+            stores = product["stores"]
+            purchase_places = product["purchase_places"]
+            pnns_groups_1 = product["pnns_groups_1"]
+            pnns_groups_2 = product["pnns_groups_2"]
+
+            data.append([product_name,
+                        nutriscore_grade,
+                        url,
+                        stores,
+                        purchase_places,
+                        pnns_groups_1,
+                        pnns_groups_2])
+
+        except KeyError:
+            # If the product doesn't have one of the keys, skip it.
+            continue
+
+    return data
+
+
+def insert_data_into_table(table: str, data: list) -> None:
+    """
+    Inserts data into a table.
+    table: name of the table
+    data: list of data to insert.
+
+    data is a list of lists :
+        data[0] is the list of attributes of the first product
+        data[0][0] is the name of the first product
+        data[0][1] is the nutriscore of the first product
+        data[0][2] is the url of the first product
+        data[0][3] is the list of stores of the first product
+        data[0][4] is the list of purchase places of the first product
+        data[0][5] is the pnns_groups_1 of the first product
+        data[0][6] is the pnns_groups_2 of the first product
+    """
+
+    try:
+        sql = mysql.connector.connect(host="localhost",
+                                      user="root",
+                                      password=ROOT_PASSWORD,
+                                      database=DB_NAME)
+        print("Populating database with OpenFoodFacts...")
+        cursor = sql.cursor()
+        for row in data:
+            cursor.execute(
+                "INSERT INTO {} (\
+                    product_name,\
+                    nutriscore_grade,\
+                    url,\
+                    stores,\
+                    purchase_places,\
+                    pnns_groups_1,\
+                    pnns_groups_2\
+                ) \
+                VALUES (%s, %s, %s, %s, %s, %s, %s)".format(table),
+                (row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+
+        sql.commit()
+        print("Done !")
+
+    except Error as e:
+        print("Error while connecting to MySQL", e)
+
+    except DatabaseError as e:
+        print("Error while creating the databse", e)
+
+    finally:
+        if sql.is_connected():
+            cursor.close()
+            sql.close()

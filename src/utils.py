@@ -28,8 +28,8 @@ def create_database_if_doesnt_exist():
         print("Connected to mysql !")
         cursor = sql.cursor()
         sql_create_db_query = (
-            """CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8';""".format(DB_NAME))  # noqa
         print("Creating database '{}' ...".format(DB_NAME))
+            """CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8mb4';""".format(DB_NAME))  # noqa
         cursor.execute(sql_create_db_query)
 
     except Error as e:

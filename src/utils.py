@@ -25,11 +25,11 @@ def create_database_if_doesnt_exist():
                                       user="root",
                                       password=ROOT_PASSWORD,
                                       database="mysql")
-        print("Connected to mysql !")
+        print("Connected to mysql !\n")
         cursor = sql.cursor()
         sql_create_db_query = (
-        print("Creating database '{}' ...".format(DB_NAME))
             """CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8mb4';""".format(DB_NAME))  # noqa
+        print("Creating database '{}' ...\nDone !".format(DB_NAME))
         cursor.execute(sql_create_db_query)
 
     except Error as e:
@@ -42,7 +42,6 @@ def create_database_if_doesnt_exist():
         if sql.is_connected():
             cursor.close()
             sql.close()
-            print("MySQL connection is closed")
 
 
 def create_tables() -> None:
@@ -60,6 +59,7 @@ def create_tables() -> None:
         pnns_groups_1 TEXT,
         pnns_groups_2 TEXT
     );"""
+    print("Creating tables into database...")
     try:
         sql = mysql.connector.connect(host="localhost",
                                       user="root",
@@ -70,6 +70,7 @@ def create_tables() -> None:
         for name, ddl in tables.items():
             cursor.execute(ddl)
 
+        print("Table(s) created successfully")
     except Error as e:
         print("Error while connecting to MySQL", e)
 
@@ -80,7 +81,6 @@ def create_tables() -> None:
         if sql.is_connected():
             cursor.close()
             sql.close()
-            print("MySQL connection is closed")
 
 
 def request_to_data(json_data: dict) -> list:

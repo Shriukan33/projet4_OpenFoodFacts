@@ -1,6 +1,19 @@
+import requests
 import mysql.connector
 from mysql.connector import Error, DatabaseError
 from settings_local import ROOT_PASSWORD, DB_NAME
+
+
+def get_json_data_from_api() -> dict:
+    print("Gathering data from OpenFoodFacts API...")
+    url = "https://fr.openfoodfacts.org/cgi/search.pl?json=true&action=process&sort_by=popularity&page_size=500&page=1&sort_by=unique_scans_n&fields=product_name,nutriscore_grade,url,stores,purchase_places,pnns_groups_1,pnns_groups_2&coutries=france" # noqa
+    headers = {"User-Agent": "Projet5 - Linux/ubuntu - Version 1.0"}
+    r = requests.get(url, headers=headers)
+
+    # Turn json response into a dict.
+    json_data = r.json()
+    print("Data collected successfully")
+    return json_data
 
 
 def create_database_if_doesnt_exist():

@@ -45,9 +45,21 @@ def create_database_if_doesnt_exist():
             print("MySQL connection is closed")
 
 
-def create_tables(tables: dict) -> None:
+def create_tables() -> None:
     """Creates tables for the OpenFoodFacts database."""
 
+    # Descriptions of the tables
+    tables = {}
+    tables["product"] = """CREATE TABLE IF NOT EXISTS product (
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
+        product_name TEXT,
+        nutriscore_grade TEXT,
+        url TEXT,
+        stores TEXT,
+        purchase_places TEXT,
+        pnns_groups_1 TEXT,
+        pnns_groups_2 TEXT
+    );"""
     try:
         sql = mysql.connector.connect(host="localhost",
                                       user="root",

@@ -8,7 +8,7 @@ def check_database_existence(DB_NAME: str) -> bool:
     """
     Checks if database exists in MySQL.
     Returns True if the database exists.
-    DB_NAME is the value of the constant stored in setting_local.py
+    DB_NAME is the value of the constant stored in settings_local.py
     """
     try:
         sql = mysql.connector.connect(host="localhost",

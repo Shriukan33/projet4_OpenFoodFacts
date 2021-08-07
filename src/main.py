@@ -1,5 +1,7 @@
 from db_setup import SetupDatabase
 from db_queries import DataQueries
+from settings_local import CATEGORIES, CATEGORIES_FR
+
 
 # Initialize the database
 setup = SetupDatabase()
@@ -20,10 +22,8 @@ while choice != "1" and choice != "2":
 if choice == "1":
     print("Vous voulez remplacer un produit.")
     print("Choisissez la catégorie du produit à remplacer :")
-    categories = ["Biscuits and cakes", "Breads", "Breakfast cereals",
-                  "Sweets", "Cheese"]
-    categories_fr = ["Biscuits et gâteaux", "Pains",
-                     "Céréales", "Bonbons", "Fromages"]
+    categories = CATEGORIES
+    categories_fr = CATEGORIES_FR
 
     # Display all categories
     for i, category in enumerate(categories_fr):

@@ -1,7 +1,7 @@
 from utils import (check_database_existence, create_database_if_doesnt_exist,
                    create_tables, request_to_data, insert_data_into_table,
                    get_json_data_from_api, display_products_from_category,
-                   display_details_of_product, display_alternatives_of_product)
+                   display_alternatives_of_product)
 from settings_local import DB_NAME
 
 
@@ -17,51 +17,54 @@ if not database_already_exists:
     insert_data_into_table("product", data)
 
 print("""
-What do you want to do ?
-1. Replace a new product
-2. See your saved searches.
+Que voulez vous faire ?
+1. Remplacer un produit
+2. Voir mes recherches sauvegardées
 
 """)
 choice = ""
 while choice != "1" and choice != "2":
-    choice = input("Your choice: ")
+    choice = input("Votre choix: ")
 
 # Chose "1" to replace a product
 if choice == "1":
-    print("You want to replace a new product\n\
-          Pick the category of your product :")
+    print("Vous voulez remplacer un produit\n\
+          Choisissez la catégorie du produit à remplacer :")
     categories = ["Biscuits and cakes", "Breads", "Breakfast cereals",
                   "Sweets", "Cheese"]
+    categories_fr = ["Biscuits et gâteaux", "Pains",
+                     "Céréales", "Bonbons", "Fromages"]
 
     # Display all categories
-    for i, category in enumerate(categories):
+    for i, category in enumerate(categories_fr):
         print(f"{i}. {category}")
 
     # Ask the user to choose a category
     category_choice = ""
     while category_choice not in range(len(categories)):
-        category_choice = input("Your choice: ").strip()
+        category_choice = input("Votre choix: ").strip()
         try:
             category_choice = int(category_choice)
         except ValueError:
-            print("Please enter a number")
+            print("Entrez un nombre s'il vous plaît")
 
     # Display all products from the chosen category
     category = categories[int(category_choice)]
-    print(f"You want to replace a product from {category}")
-    print("Here is a list of products from this category :\n\n")
+    category_fr = categories_fr[int(category_choice)]
+    print(f"Vous voulez remplacer un produit de la catégorie {category_fr}")
+    print("Voici une list des produits appartenant à cette catégorie :\n\n")
     list_of_id = display_products_from_category(category)
 
-    print("Which one do you want to replace ?\n")
+    print("Lequel voulez vous remplacer ?\n")
 
     # Ask to the user to choose a product
     chosen_product_id = ""
     while chosen_product_id not in list_of_id:
-        chosen_product_id = input("Your choice: ").strip()
+        chosen_product_id = input("Votre choix: ").strip()
         try:
             chosen_product_id = int(chosen_product_id)
         except ValueError:
-            print("Please enter a number")
+            print("Entrez un nombre s'il vous plaît")
 
-    print(f"You want to replace the product {chosen_product_id}")
+    print(f"Vous voulez remplacer : {chosen_product_id}")
     display_alternatives_of_product(chosen_product_id)

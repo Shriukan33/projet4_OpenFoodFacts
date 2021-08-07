@@ -26,7 +26,7 @@ def check_database_existence(DB_NAME: str) -> bool:
         return False
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     finally:
         if sql.is_connected():
@@ -35,14 +35,14 @@ def check_database_existence(DB_NAME: str) -> bool:
 
 
 def get_json_data_from_api() -> dict:
-    print("Gathering data from OpenFoodFacts API...")
+    print("Récupération de données depuis OpenFoodFacts...")
     url = "https://fr.openfoodfacts.org/cgi/search.pl?json=true&action=process&sort_by=popularity&page_size=500&page=1&sort_by=unique_scans_n&fields=product_name,nutriscore_grade,url,stores,purchase_places,pnns_groups_1,pnns_groups_2&coutries=france" # noqa
     headers = {"User-Agent": "Projet5 - Linux/ubuntu - Version 1.0"}
     r = requests.get(url, headers=headers)
 
     # Turn json response into a dict.
     json_data = r.json()
-    print("Data collected successfully")
+    print("Données collectées avec succès !")
     return json_data
 
 
@@ -55,18 +55,18 @@ def create_database_if_doesnt_exist():
                                       user="root",
                                       password=ROOT_PASSWORD,
                                       database="mysql")
-        print("Connected to mysql !\n")
+        print("Connecté à MySQL !\n")
         cursor = sql.cursor()
         sql_create_db_query = (
             """CREATE DATABASE IF NOT EXISTS {} DEFAULT CHARACTER SET 'utf8mb4';""".format(DB_NAME))  # noqa
-        print("Creating database '{}' ...\nDone !".format(DB_NAME))
+        print("Creation de '{}' ...\nTerminée !".format(DB_NAME))
         cursor.execute(sql_create_db_query)
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     finally:
         if sql.is_connected():
@@ -89,7 +89,7 @@ def create_tables() -> None:
         pnns_groups_1 TEXT,
         pnns_groups_2 TEXT
     );"""
-    print("Creating tables into database...")
+    print("Création des tables dans la base de donnée...")
     try:
         sql = mysql.connector.connect(host="localhost",
                                       user="root",
@@ -100,12 +100,12 @@ def create_tables() -> None:
         for name, ddl in tables.items():
             cursor.execute(ddl)
 
-        print("Table(s) created successfully")
+        print("Table(s) créée(s) avec succès !")
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     finally:
         if sql.is_connected():
@@ -169,7 +169,7 @@ def insert_data_into_table(table: str, data: list) -> None:
                                       user="root",
                                       password=ROOT_PASSWORD,
                                       database=DB_NAME)
-        print("Populating database with OpenFoodFacts...")
+        print("Remplissage de la base de donnée avec OpenFoodFacts...")
         cursor = sql.cursor()
         for row in data:
             cursor.execute(
@@ -186,13 +186,13 @@ def insert_data_into_table(table: str, data: list) -> None:
                 (row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
 
         sql.commit()
-        print("Done !")
+        print("Terminé !")
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     finally:
         if sql.is_connected():
@@ -213,17 +213,16 @@ def display_products_from_category(category: str) -> list:
 
         cursor = sql.cursor()
         cursor.execute("SELECT * FROM product WHERE pnns_groups_2 LIKE '{}'".format(category))  # noqa
-        print("{} products found in {} category".format(cursor.rowcount, category))  # noqa
         list_of_id = []
         for row in cursor:
             print("{} - {} (Nutriscore : {})".format(row[0], row[1], row[2].upper())) # noqa
             list_of_id.append(int(row[0]))
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     finally:
         if sql.is_connected():
@@ -253,17 +252,17 @@ def display_details_of_product(product_id) -> None:
         {} - {}
         Nutriscore : {}
         URL : {}
-        Stores : {}
-        Purchase places : {}
+        Magasins : {}
+        Lieux d'achat : {}
         """.format(
             row[0], row[1], row[2].upper(),
             row[3], row[4], row[5]))
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     finally:
         if sql.is_connected():
@@ -297,17 +296,17 @@ def display_alternatives_of_product(product_id) -> None:
                 row[2], row[7]))
         # Pick the 1st row of the result set
         alternative_id = cursor.fetchone()[0]
-        print("Here is an alternative to this product :\n")
+        print("Voici une alternative à ce produit :\n")
         display_details_of_product(alternative_id)
 
     except Error as e:
-        print("Error while connecting to MySQL", e)
+        print("Erreur de connexion à MySQL", e)
 
     except DatabaseError as e:
-        print("Error while creating the databse", e)
+        print("Erreur lors de la création de la base de données", e)
 
     except TypeError:
-        print("No alternatives found")
+        print("Aucune meilleure alternative trouvée")
 
     finally:
         if sql.is_connected():

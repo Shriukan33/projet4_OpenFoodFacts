@@ -47,7 +47,7 @@ if choice == "1":
 
     print("Lequel voulez vous remplacer ?\n")
 
-    # Ask to the user to choose a product
+    # Ask to the user to choose a product to replace
     chosen_product_id = ""
     while chosen_product_id not in list_of_id:
         chosen_product_id = input("Votre choix: ").strip()
@@ -56,5 +56,6 @@ if choice == "1":
         except ValueError:
             print("Entrez un nombre s'il vous plaît")
 
+    # Displays alternatives to the chosen product, if any
     print(f"Vous voulez remplacer : {chosen_product_id}")
     queries.display_alternatives_of_product(chosen_product_id)

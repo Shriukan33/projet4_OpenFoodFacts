@@ -96,12 +96,21 @@ class DataQueries:
             # The alternative must have a better nutriscore and
             # belong to the same group
             cursor.execute(
-                """SELECT * FROM product WHERE nutriscore_grade < '{}' AND pnns_groups_2 = '{}'""".format(  # noqa
+                """SELECT * FROM product WHERE nutriscore_grade < '{}' AND pnns_groups_2 = '{}' ORDER BY nutriscore_grade""".format(  # noqa
                     row[2], row[7]))
-            # Pick the 1st row of the result set
-            alternative_id = cursor.fetchone()[0]
-            print("Voici une alternative à ce produit :\n")
-            self.display_details_of_product(alternative_id)
+            # Displays top 3 alternatives
+            alternative_id = cursor.fetchmany(3)
+            if len(alternative_id) > 0:
+                print(f"Voici {len(alternative_id)} alternatives :")
+
+            for i in range(3):
+                try:
+                    print("\n")
+                    self.display_details_of_product(alternative_id[i][0])
+                except IndexError:
+                    # If there are no alternatives or less than 3.
+                    print("Aucune autre alternative trouvée.")
+                    break
 
         except Error as e:
             print("Erreur de connexion à MySQL", e)

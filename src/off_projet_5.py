@@ -18,8 +18,8 @@ while choice != "1" and choice != "2":
 
 # Chose "1" to replace a product
 if choice == "1":
-    print("Vous voulez remplacer un produit\n\
-          Choisissez la catégorie du produit à remplacer :")
+    print("Vous voulez remplacer un produit.")
+    print("Choisissez la catégorie du produit à remplacer :")
     categories = ["Biscuits and cakes", "Breads", "Breakfast cereals",
                   "Sweets", "Cheese"]
     categories_fr = ["Biscuits et gâteaux", "Pains",
@@ -32,7 +32,7 @@ if choice == "1":
     # Ask the user to choose a category
     category_choice = ""
     while category_choice not in range(len(categories)):
-        category_choice = input("Votre choix: ").strip()
+        category_choice = input("\nVotre choix: ").strip()
         try:
             category_choice = int(category_choice)
         except ValueError:
@@ -41,8 +41,8 @@ if choice == "1":
     # Display all products from the chosen category
     category = categories[int(category_choice)]
     category_fr = categories_fr[int(category_choice)]
-    print(f"Vous voulez remplacer un produit de la catégorie {category_fr}")
-    print("Voici une list des produits appartenant à cette catégorie :\n\n")
+    print(f"\nVous voulez remplacer un produit de la catégorie {category_fr}")
+    print("Voici une list des produits appartenant à cette catégorie :\n")
     list_of_id = queries.display_products_from_category(category)
 
     print("Lequel voulez vous remplacer ?\n")

@@ -1,10 +1,10 @@
-from utils import (display_products_from_category,
-                   display_alternatives_of_product)
-
 from db_setup import SetupDatabase
+from db_queries import DataQueries
 
-
+# Initialize the database
 setup = SetupDatabase()
+# Class that makes the queries to database.
+queries = DataQueries()
 
 print("""
 Que voulez vous faire ?
@@ -43,7 +43,7 @@ if choice == "1":
     category_fr = categories_fr[int(category_choice)]
     print(f"Vous voulez remplacer un produit de la catégorie {category_fr}")
     print("Voici une list des produits appartenant à cette catégorie :\n\n")
-    list_of_id = display_products_from_category(category)
+    list_of_id = queries.display_products_from_category(category)
 
     print("Lequel voulez vous remplacer ?\n")
 
@@ -57,4 +57,4 @@ if choice == "1":
             print("Entrez un nombre s'il vous plaît")
 
     print(f"Vous voulez remplacer : {chosen_product_id}")
-    display_alternatives_of_product(chosen_product_id)
+    queries.display_alternatives_of_product(chosen_product_id)

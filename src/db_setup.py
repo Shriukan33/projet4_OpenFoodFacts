@@ -1,7 +1,7 @@
 import requests
 import mysql.connector
 from mysql.connector import Error, DatabaseError
-from settings_local import ROOT_PASSWORD, DB_NAME
+from settings_local import ROOT_PASSWORD, DB_NAME, CATEGORIES
 
 
 class SetupDatabase:
@@ -17,6 +17,7 @@ class SetupDatabase:
 
             data = self.request_to_data(json_data)
             self.insert_data_into_table("product", data)
+            self.insert_data_into_table("category", CATEGORIES)
 
     def check_database_existence(self, DB_NAME: str) -> bool:
         """
@@ -100,6 +101,12 @@ class SetupDatabase:
             pnns_groups_1 TEXT,
             pnns_groups_2 TEXT
         );"""
+
+        tables["category"] = """CREATE TABLE IF NOT EXISTS category (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(255)
+            );"""
+
         print("Création des tables dans la base de donnée...")
         try:
             sql = mysql.connector.connect(host="localhost",
@@ -180,19 +187,30 @@ class SetupDatabase:
                                           database=DB_NAME)
             print("Remplissage de la base de donnée avec OpenFoodFacts...")
             cursor = sql.cursor()
-            for row in data:
-                cursor.execute(
-                    "INSERT INTO {} (\
-                        product_name,\
-                        nutriscore_grade,\
-                        url,\
-                        stores,\
-                        purchase_places,\
-                        pnns_groups_1,\
-                        pnns_groups_2\
-                    ) \
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)".format(table),
-                    (row[0], row[1], row[2], row[3], row[4], row[5], row[6]))
+            if table == "product":
+                for row in data:
+                    cursor.execute(
+                        "INSERT INTO {} (\
+                            product_name,\
+                            nutriscore_grade,\
+                            url,\
+                            stores,\
+                            purchase_places,\
+                            pnns_groups_1,\
+                            pnns_groups_2\
+                        ) \
+                        VALUES (%s, %s, %s, %s, %s, %s, %s)".format(table),
+                        (row[0], row[1], row[2], row[3],
+                         row[4], row[5], row[6]))
+
+            elif table == "category":
+                for row in data:
+                    cursor.execute(
+                        "INSERT INTO {} (\
+                            name\
+                        ) \
+                        VALUES (%s)".format(table),
+                        (row,))
 
             sql.commit()
             print("Terminé !")

@@ -39,7 +39,7 @@ if choice == "1":
             print("Entrez un nombre s'il vous plaît")
 
     # Display all products from the chosen category
-    category = categories[int(category_choice)]
+    category = category_choice + 1
     category_fr = categories_fr[int(category_choice)]
     print(f"\nVous voulez remplacer un produit de la catégorie {category_fr}")
     print("Voici une list des produits appartenant à cette catégorie :\n")

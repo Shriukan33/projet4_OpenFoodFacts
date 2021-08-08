@@ -5,7 +5,7 @@ from settings_local import ROOT_PASSWORD, DB_NAME
 
 class DataQueries:
 
-    def display_products_from_category(self, category: str) -> list:
+    def display_products_from_category(self, category: int) -> list:
         """
         Makes a query to database to print a list of products
         from a given category.
@@ -17,7 +17,7 @@ class DataQueries:
                                           database=DB_NAME)
 
             cursor = sql.cursor()
-            cursor.execute("SELECT * FROM product WHERE pnns_groups_2 LIKE '{}'".format(category))  # noqa
+            cursor.execute("SELECT * FROM product WHERE pnns_groups_2 = {}".format(int(category)))  # noqa
             list_of_id = []
             for row in cursor:
                 print("{} - {} (Nutriscore : {})".format(row[0], row[1], row[2].upper()))  # noqa

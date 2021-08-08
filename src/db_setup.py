@@ -16,8 +16,8 @@ class SetupDatabase:
             self.create_tables()
 
             data = self.request_to_data(json_data)
-            self.insert_data_into_table("product", data)
             self.insert_data_into_table("category", CATEGORIES)
+            self.insert_data_into_table("product", data)
 
     def check_database_existence(self, DB_NAME: str) -> bool:
         """
@@ -91,6 +91,14 @@ class SetupDatabase:
 
         # Descriptions of the tables
         tables = {}
+        # category must be created first because it's used as foreign key.
+        tables["category"] = """CREATE TABLE IF NOT EXISTS category (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+            name VARCHAR(255)
+            );"""
+
+        # product table uses the foreign key of category
+        # First item of category is id 1, the 2nd is id 2, etc.
         tables["product"] = """CREATE TABLE IF NOT EXISTS product (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
             product_name TEXT,
@@ -99,13 +107,9 @@ class SetupDatabase:
             stores TEXT,
             purchase_places TEXT,
             pnns_groups_1 TEXT,
-            pnns_groups_2 TEXT
+            pnns_groups_2 INTEGER,
+            FOREIGN KEY (pnns_groups_2) REFERENCES category (id)
         );"""
-
-        tables["category"] = """CREATE TABLE IF NOT EXISTS category (
-            id INTEGER PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(255)
-            );"""
 
         print("Création des tables dans la base de donnée...")
         try:
@@ -130,6 +134,20 @@ class SetupDatabase:
                 cursor.close()
                 sql.close()
 
+    def match_category_with_id(self, category_name: str) -> int:
+        """
+        Returns the ID corresponding to a given category name.
+        ID corresponds to the id field in category table.
+        """
+        cat_to_id = {}
+        for index, category in enumerate(CATEGORIES):
+            cat_to_id[category] = index+1
+        try:
+            id = int(cat_to_id[category_name])
+        except KeyError:
+            id = None
+        return id
+
     def request_to_data(self, json_data: dict) -> list:
         """
         Creates a nested list containing products and all their informations.
@@ -147,8 +165,10 @@ class SetupDatabase:
                 stores = product["stores"]
                 purchase_places = product["purchase_places"]
                 pnns_groups_1 = product["pnns_groups_1"]
-                pnns_groups_2 = product["pnns_groups_2"]
-
+                pnns_groups_2 = \
+                    self.match_category_with_id(product["pnns_groups_2"])
+                if pnns_groups_2 is None:
+                    continue
                 data.append([product_name,
                             nutriscore_grade,
                             url,

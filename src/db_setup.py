@@ -248,3 +248,7 @@ class SetupDatabase:
             if sql.is_connected():
                 cursor.close()
                 sql.close()
+
+
+if __name__ == '__main__':
+    db_setup = SetupDatabase()

@@ -121,10 +121,11 @@ class SetupDatabase:
             cursor = sql.cursor()
             for name, ddl in tables.items():
                 cursor.execute(ddl)
+                print("Table", name, " créée avec succès !")
 
-            print("Table(s) créée(s) avec succès !")
+            print("Tables créées avec succès !")
         except Error as e:
-            print("Erreur de connexion à MySQL", e)
+            print(f"Erreur lors de la création de {name} :", e)
 
         except DatabaseError as e:
             print("Erreur lors de la création de la base de données", e)
@@ -205,9 +206,10 @@ class SetupDatabase:
                                           user="root",
                                           password=ROOT_PASSWORD,
                                           database=DB_NAME)
-            print("Remplissage de la base de donnée avec OpenFoodFacts...")
+
             cursor = sql.cursor()
             if table == "product":
+                print("Remplissage de la base de donnée avec OpenFoodFacts...")
                 for row in data:
                     cursor.execute(
                         "INSERT INTO {} (\
@@ -224,6 +226,7 @@ class SetupDatabase:
                          row[4], row[5], row[6]))
 
             elif table == "category":
+                print("Attribution des clés étrangères...")
                 for row in data:
                     cursor.execute(
                         "INSERT INTO {} (\

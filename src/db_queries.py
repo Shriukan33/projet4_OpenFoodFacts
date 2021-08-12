@@ -125,3 +125,104 @@ class DataQueries:
             if sql.is_connected():
                 cursor.close()
                 sql.close()
+
+    def save_product_to_saved_table(self, product_id):
+        """
+        Saves a product to saved table.
+        Users can save products they want to replace.
+        """
+        try:
+            sql = mysql.connector.connect(host="localhost",
+                                          user="root",
+                                          password=ROOT_PASSWORD,
+                                          database=DB_NAME)
+
+            cursor = sql.cursor()
+            # cursor.execute("""SELECT (id)
+            # FROM saved
+            # WHERE id = '{}'""".format(product_id))
+            # row = cursor.fetchone()
+            cursor.execute(
+                f"""INSERT INTO saved (id)
+                VALUES({product_id})""")
+
+            sql.commit()
+            print("Sauvegarde effectuée !")
+
+        except Error as e:
+            if e.errno == 1062:
+                print("Cette produit est déjà enregistré.")
+            else:
+                print("Erreur lors de la sauvegarde de l'article : ", e)
+
+        finally:
+            if sql.is_connected():
+                cursor.close()
+                sql.close()
+
+    def display_saved_results(self) -> list:
+        """
+        Display the list of saved products in the saved table.
+        """
+        try:
+            sql = mysql.connector.connect(host="localhost",
+                                          user="root",
+                                          password=ROOT_PASSWORD,
+                                          database=DB_NAME)
+
+            cursor = sql.cursor()
+            cursor.execute("SELECT * FROM saved")
+            list_of_id = []
+            # Make a list of ID to display the details.
+            for row in cursor:
+                list_of_id.append(int(row[0]))
+
+            if len(list_of_id) > 0:
+                print(f"Voici {len(list_of_id)} produits sauvegardés :\n")
+                for product_id in list_of_id:
+                    self.display_oneline_details(product_id)
+            else:
+                print("Aucun produit sauvegardé.\n")
+
+        except Error as e:
+            print("Erreur de connexion à MySQL", e)
+
+        except DatabaseError as e:
+            print("Erreur lors de la création de la base de données", e)
+
+        finally:
+            if sql.is_connected():
+                cursor.close()
+                sql.close()
+
+        return list_of_id
+
+    def display_oneline_details(self, product_id: int) -> None:
+        """
+        Displays short description of a product using its ID
+        Shows with this format : product_id - product_name - nutriscore_grade
+        """
+        try:
+            sql = mysql.connector.connect(host="localhost",
+                                          user="root",
+                                          password=ROOT_PASSWORD,
+                                          database=DB_NAME)
+
+            cursor = sql.cursor()
+            cursor.execute(
+                """SELECT * FROM product WHERE id = '{}'""".format(
+                    product_id))
+            row = cursor.fetchone()
+            print("""{} - {} - Nutriscore : {}""".format(
+                row[0], row[1], row[2].upper()))
+
+        except Error as e:
+            print("Erreur de connexion à MySQL", e)
+
+        except DatabaseError as e:
+            print("Erreur lors de la création de la base de données", e)
+
+        finally:
+            if sql.is_connected():
+                cursor.close()
+                sql.close()

@@ -111,6 +111,15 @@ class SetupDatabase:
             FOREIGN KEY (pnns_groups_2) REFERENCES category (id)
         );"""
 
+        tables["saved"] = """CREATE TABLE IF NOT EXISTS saved (
+            id INTEGER UNIQUE,
+            CONSTRAINT fk_product_id
+                FOREIGN KEY id(id)
+                REFERENCES product (id)
+                ON DELETE CASCADE
+                ON UPDATE CASCADE
+            );"""
+
         print("Création des tables dans la base de donnée...")
         try:
             sql = mysql.connector.connect(host="localhost",
